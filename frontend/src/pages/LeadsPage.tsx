@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../services/supabase'
 import {
-  Plus, Search, Filter, Upload, Send, MapPin, Trash2, Eye,
-  Building2, Car, Anchor, Phone, Mail, Globe, X, Sparkles, RefreshCw
+  Plus, Search, Upload, Send, MapPin, Trash2, Eye,
+  Building2, Car, Anchor, X, Sparkles, RefreshCw
 } from 'lucide-react'
 
 interface Lead {
@@ -97,7 +97,8 @@ const LeadsPage = () => {
     if (!file) return
     const text = await file.text()
     const lines = text.split('\n').filter(l => l.trim())
-    const header = lines[0].toLowerCase()
+    const _header = lines[0].toLowerCase()
+    console.log('Importing CSV with header:', _header)
     const rows = lines.slice(1)
     let imported = 0
     for (const row of rows) {

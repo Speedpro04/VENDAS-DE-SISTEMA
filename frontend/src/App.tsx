@@ -1,4 +1,3 @@
-import React from 'react'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
@@ -7,7 +6,7 @@ import LeadsPage from './pages/LeadsPage'
 import ConfigPage from './pages/ConfigPage'
 import {
   LayoutDashboard, Users, Settings, LogOut, Zap,
-  Building2, Car, Anchor, Calendar
+  Building2, Car, Anchor
 } from 'lucide-react'
 
 const Sidebar = () => {

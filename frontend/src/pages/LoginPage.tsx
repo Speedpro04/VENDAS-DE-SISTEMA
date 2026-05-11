@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -27,7 +27,6 @@ const salesMessages = [
 
 const LoginPage = () => {
   const { quickAccess } = useAuth()
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [activeMsg, setActiveMsg] = useState(0)
 

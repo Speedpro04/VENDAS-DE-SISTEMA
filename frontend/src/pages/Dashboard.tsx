@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '../services/supabase'
-import { Users, MessageSquare, TrendingUp, CheckCircle2, XCircle, Clock, Zap, Send } from 'lucide-react'
+import { Users, TrendingUp, CheckCircle2, Clock, ArrowUpRight, ArrowDownRight, DollarSign, Activity } from 'lucide-react'
 
 interface Lead {
   id: string
@@ -37,13 +37,14 @@ const productBadge = (p: string) => {
 
 const Dashboard = () => {
   const [leads, setLeads] = useState<Lead[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchLeads()
   }, [])
 
   const fetchLeads = async () => {
+    setLoading(true)
     const { data } = await supabase.from('leads').select('*').eq('ativo', true).order('created_at', { ascending: false })
     setLeads(data || [])
     setLoading(false)

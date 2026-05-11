@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Settings, Key, Globe, MessageSquare, Clock, Save, CheckCircle2, Wifi, Mail, Zap } from 'lucide-react'
+import { Settings, MessageSquare, Clock, Save, CheckCircle2, Mail, Zap } from 'lucide-react'
 
 const ConfigPage = () => {
   const [saved, setSaved] = useState(false)
