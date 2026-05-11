@@ -1,0 +1,535 @@
+# SKILL — SQR Vendas (Sistema de Qualificação e Relacionamento)
+
+## Visão Geral
+Ferramenta pessoal de vendas com SPIN Selling automatizado via WhatsApp.
+O usuário cadastra leads → o sistema conduz o ciclo de vendas completo (disparo + resposta automática) via Evolution API + Claude API.
+
+**Produtos alvo:**
+- Solara Connect (clínicas: médica, odontológica, estética, fisioterapia, harmonização, emagrecimento)
+- Autoracer (marketplace de veículos — Vale do Paraíba)
+
+---
+
+## Stack
+
+| Camada | Tecnologia |
+|---|---|
+| Frontend | Vite + React + TypeScript |
+| Backend | FastAPI (Python) |
+| Banco | Supabase (PostgreSQL + RLS) |
+| WhatsApp | Evolution API |
+| IA | Claude API (claude-sonnet-4-20250514) |
+| Deploy | EasyPanel — **sempre Dockerfile, nunca Nixpacks** |
+| Infra | Hostinger KVM2 via EasyPanel |
+
+---
+
+## Arquitetura de Pastas
+
+```
+sqr-vendas/
+├── frontend/                  # Vite + React + TS
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx      # Visão geral do funil
+│   │   │   ├── Leads.tsx          # Lista e cadastro de leads
+│   │   │   ├── LeadDetail.tsx     # Histórico + estágio SPIN
+│   │   │   └── Configuracoes.tsx  # Produto ativo, instância WA, prompts
+│   │   ├── components/
+│   │   ├── services/api.ts        # Calls para o FastAPI
+│   │   └── main.tsx
+│   ├── Dockerfile.frontend
+│   └── vite.config.ts
+│
+├── backend/                   # FastAPI
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── routers/
+│   │   │   ├── leads.py           # CRUD leads
+│   │   │   ├── webhook.py         # Recebe mensagens Evolution API
+│   │   │   ├── spin.py            # Orquestração SPIN + Claude
+│   │   │   └── campanhas.py       # Disparo em lote
+│   │   ├── services/
+│   │   │   ├── evolution.py       # Cliente Evolution API
+│   │   │   ├── claude_spin.py     # Geração de mensagens SPIN
+│   │   │   └── supabase_client.py
+│   │   └── models/
+│   │       ├── lead.py
+│   │       └── mensagem.py
+│   ├── Dockerfile.backend
+│   └── requirements.txt
+│
+└── docker-compose.yml         # Apenas para dev local
+```
+
+---
+
+## Banco de Dados — Supabase
+
+### Tabela: `leads`
+```sql
+create table leads (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  telefone text not null unique,  -- formato: 5512999999999
+  produto text not null,          -- 'solara_connect' | 'autoracer'
+  segmento text,                  -- ex: 'clinica_estetica', 'revendedora'
+  cidade text,
+  observacoes text,
+  estagio text default 'novo',    -- novo | situacao | problema | implicacao | need | proposta | fechado | perdido
+  ativo boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+```
+
+### Tabela: `mensagens`
+```sql
+create table mensagens (
+  id uuid primary key default gen_random_uuid(),
+  lead_id uuid references leads(id),
+  direcao text not null,          -- 'enviada' | 'recebida'
+  conteudo text not null,
+  estagio_spin text,              -- estágio no momento da mensagem
+  created_at timestamptz default now()
+);
+```
+
+### Tabela: `campanhas`
+```sql
+create table campanhas (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  produto text not null,
+  status text default 'rascunho',  -- rascunho | ativa | pausada | concluida
+  total_leads int default 0,
+  disparados int default 0,
+  responderam int default 0,
+  created_at timestamptz default now()
+);
+```
+
+---
+
+## Lógica SPIN por Produto
+
+### Estágios e objetivos
+
+| Estágio | Objetivo | Gatilho para avançar |
+|---|---|---|
+| `novo` | Lead cadastrado, aguardando disparo | Disparo manual ou campanha |
+| `situacao` | Entender o contexto atual | Lead responde sobre sua operação |
+| `problema` | Identificar a dor real | Lead menciona dificuldade/frustração |
+| `implicacao` | Aprofundar consequências do problema | Lead reconhece impacto do problema |
+| `need` | Lead verbaliza o valor da solução | Lead demonstra interesse/pergunta sobre solução |
+| `proposta` | Enviar proposta/demo | Após need confirmado |
+| `fechado` | Venda concluída | Confirmação |
+| `perdido` | Sem interesse | Recusa explícita ou 3+ sem resposta |
+
+---
+
+### Prompts SPIN — Solara Connect (Clínicas)
+
+**Sistema base:**
+```
+Você é um consultor de vendas especializado em automação para clínicas de saúde e estética no Brasil.
+Produto: Solara Connect — agente de atendimento com WhatsApp integrado, agendamento, prontuário, recuperação de clientes e relatórios.
+Tom: profissional, próximo, sem pressão. Nunca force a venda. Conduza com perguntas.
+Responda SEMPRE em português brasileiro informal mas profissional.
+Máximo 3 frases por mensagem. Seja direto e humano.
+```
+
+**Mensagem inicial (estágio: situacao):**
+```
+Prompt: Gere a primeira mensagem para {nome}, {segmento} em {cidade}.
+Objetivo: apresentação breve + pergunta sobre como gerenciam o atendimento hoje.
+Não mencione o produto ainda. Apenas abra a conversa com curiosidade genuína.
+```
+
+**Estágio problema:**
+```
+Prompt: O lead {nome} respondeu: "{ultima_mensagem}".
+Estágio atual: problema.
+Objetivo: identificar a principal dor (agenda cheia/vazia, no-show, pacientes sumindo, WhatsApp manual caótico).
+Faça UMA pergunta que aprofunde o problema mencionado. Não ofereça solução ainda.
+```
+
+**Estágio implicação:**
+```
+Prompt: O lead {nome} disse: "{ultima_mensagem}".
+Estágio atual: implicacao.
+Objetivo: fazer o lead perceber o custo real do problema (tempo perdido, receita não gerada, desgaste da equipe).
+Use linguagem de impacto financeiro ou operacional. UMA pergunta de implicação.
+```
+
+**Estágio need (need-payoff):**
+```
+Prompt: O lead {nome} disse: "{ultima_mensagem}".
+Estágio atual: need.
+Objetivo: fazer o lead imaginar como seria se o problema estivesse resolvido.
+Pergunte sobre o cenário ideal. Ex: "Se você pudesse recuperar automaticamente os pacientes que sumiam, como isso impactaria sua clínica?"
+```
+
+**Estágio proposta:**
+```
+Prompt: O lead {nome} demonstrou interesse. Última mensagem: "{ultima_mensagem}".
+Apresente o Solara Connect em 3 bullets objetivos alinhados exatamente com as dores mencionadas ao longo da conversa.
+Finalize com CTA para uma demonstração rápida (15min). Sem pressão.
+Histórico de dores identificadas: {historico_dores}
+```
+
+---
+
+### Prompts SPIN — Autoracer (Veículos)
+
+**Sistema base:**
+```
+Você é um consultor de vendas especializado em marketplaces automotivos para o Vale do Paraíba, SP.
+Produto: Autoracer — marketplace de veículos com sistema de vídeo curto, para revendedoras e vendedores da região.
+Tom: direto, regional, sem enrolação. Fale como alguém da região.
+Máximo 3 frases. Português brasileiro informal.
+```
+
+**Mensagem inicial:**
+```
+Prompt: Gere a primeira mensagem para {nome}, {segmento} em {cidade}.
+Objetivo: abertura descontraída + pergunta sobre como anunciam veículos hoje (Instagram? OLX? boca a boca?).
+```
+
+**Estágio problema:**
+```
+Prompt: O lead {nome} respondeu: "{ultima_mensagem}".
+Identifique a dor: pouco alcance local, custo alto de plataformas grandes (iCarros, Webmotors), dificuldade de destacar o estoque, sem vídeo.
+UMA pergunta que aprofunde. Sem solução ainda.
+```
+
+**Estágio implicação:**
+```
+Prompt: Lead disse: "{ultima_mensagem}".
+Faça o lead calcular mentalmente o custo de não ter uma vitrine local forte. Quantos veículos ficam parados? Quanto representa em comissão perdida?
+```
+
+**Estágio need:**
+```
+Prompt: Lead disse: "{ultima_mensagem}".
+Faça o lead imaginar ter uma plataforma local onde compradores do Vale do Paraíba buscam especificamente. Vídeo curto do veículo em destaque.
+```
+
+**Estágio proposta:**
+```
+Prompt: Apresente o Autoracer alinhado às dores de {nome}.
+Destaque: alcance local no Vale do Paraíba, vídeo curto do estoque, custo acessível vs grandes plataformas.
+CTA: convide para ver a plataforma funcionando. Sem pressão.
+Dores identificadas: {historico_dores}
+```
+
+---
+
+## Backend — Endpoints FastAPI
+
+```python
+# routers/webhook.py
+POST /webhook/whatsapp
+# Recebe mensagem do Evolution API
+# → identifica lead pelo telefone
+# → registra mensagem no Supabase
+# → chama claude_spin.py com contexto completo
+# → envia resposta via Evolution API
+# → atualiza estágio do lead
+
+# routers/leads.py
+GET    /leads               # Lista todos os leads
+POST   /leads               # Cadastra novo lead
+GET    /leads/{id}          # Detalhe + histórico
+PUT    /leads/{id}          # Atualiza lead/estágio
+DELETE /leads/{id}          # Remove lead
+
+# routers/campanhas.py
+POST /campanhas/disparar    # Dispara mensagem inicial para lista de leads
+# → itera leads com estagio='novo'
+# → gera mensagem inicial via Claude
+# → envia via Evolution API
+# → atualiza estagio para 'situacao'
+```
+
+---
+
+## Serviço Claude — claude_spin.py
+
+```python
+async def gerar_resposta_spin(
+    lead: dict,
+    ultima_mensagem: str,
+    historico: list[dict],
+    produto: str
+) -> tuple[str, str]:
+    """
+    Retorna: (mensagem_gerada, novo_estagio)
+    """
+    # 1. Monta contexto completo do lead
+    # 2. Seleciona prompt do estágio atual
+    # 3. Chama Claude API
+    # 4. Interpreta resposta + decide se avança estágio
+    # 5. Retorna mensagem + novo estágio
+```
+
+**Lógica de avanço de estágio:**
+- Claude avalia a resposta do lead e retorna JSON:
+```json
+{
+  "mensagem": "texto a enviar",
+  "avancar_estagio": true,
+  "novo_estagio": "problema",
+  "dor_identificada": "agenda com muitos no-shows"
+}
+```
+
+---
+
+## Evolution API — Configuração
+
+```python
+# services/evolution.py
+BASE_URL = os.getenv("EVOLUTION_API_URL")  # ex: https://evo.seudominio.com
+API_KEY  = os.getenv("EVOLUTION_API_KEY")
+INSTANCE = os.getenv("EVOLUTION_INSTANCE")  # nome da instância WA
+
+async def enviar_mensagem(telefone: str, texto: str):
+    # POST {BASE_URL}/message/sendText/{INSTANCE}
+    # Headers: apikey: {API_KEY}
+    # Body: { "number": telefone, "text": texto }
+
+async def configurar_webhook(url_webhook: str):
+    # POST {BASE_URL}/webhook/set/{INSTANCE}
+    # Aponta para: https://api.sqrvendas.com/webhook/whatsapp
+```
+
+---
+
+## Dockerfiles
+
+### Dockerfile.frontend
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+```
+
+### Dockerfile.backend
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+---
+
+## Variáveis de Ambiente (.env)
+
+```env
+# Supabase
+SUPABASE_URL=
+SUPABASE_KEY=
+
+# Evolution API
+EVOLUTION_API_URL=
+EVOLUTION_API_KEY=
+EVOLUTION_INSTANCE=
+
+# Claude API
+ANTHROPIC_API_KEY=
+
+# App
+SECRET_KEY=
+ENVIRONMENT=production
+```
+
+---
+
+## Frontend — Páginas
+
+### Dashboard
+- Funil Kanban visual: Novo → Situação → Problema → Implicação → Need → Proposta → Fechado/Perdido
+- Cards de lead com nome, produto, último contato
+- Métricas: total ativo, taxa resposta, em proposta, fechados
+
+### Leads
+- Tabela com filtros por produto, estágio, cidade
+- Botão "Importar CSV" (nome, telefone, produto, segmento, cidade)
+- Botão "Disparar" individual ou em lote
+- Badge colorido por estágio
+
+### LeadDetail
+- Timeline completa da conversa WhatsApp
+- Estágio atual com botão para forçar avanço manual
+- Campo de observações
+- Botão "Enviar mensagem manual"
+
+### Configurações
+- Produto padrão ativo
+- URL + Key da Evolution API + Instância
+- Webhook URL (para copiar e colar na Evolution)
+- Chave Claude API
+
+---
+
+## Identidade Visual
+
+Ferramenta pessoal/interna — foco em clareza operacional:
+- **Fundo:** `#0F0F14` (quase preto)
+- **Primário:** `#C9A84C` (gold Axos Hub)
+- **Destaque:** `#046A38` (emerald — fechado/positivo)
+- **Alerta:** `#9B1B30` (ruby — perdido/urgente)
+- **Tipografia:** Montserrat (UI) + dados em monospace
+- **Layout:** sidebar fixa, área principal com Kanban ou tabela
+
+---
+
+## Regras de Negócio
+
+1. **Uma conversa por vez por lead** — enquanto aguarda resposta, não dispara nova mensagem
+2. **Máximo 3 tentativas sem resposta** → marca como `perdido` automaticamente
+3. **Intervalo mínimo entre mensagens:** 24h (evitar bloqueio WA)
+4. **Nunca mencionar o produto na primeira mensagem** (SPIN puro)
+5. **Estágio só avança, nunca volta** (exceto override manual)
+6. **Histórico de dores** é acumulativo — Claude sempre recebe o contexto completo
+
+---
+
+## Semantic Vector — Objeções por Produto
+
+### Solara Connect — 30 frases × 5 categorias
+
+**Categoria 1 — Interesse inicial (abertura)**
+1. como vocês gerenciam o atendimento hoje
+2. quantos pacientes passam por mês
+3. como os pacientes marcam consulta
+4. usa algum sistema de agendamento
+5. a secretária consegue dar conta do volume
+6. tem muito paciente que some sem marcar retorno
+7. como funciona o whatsapp da clínica hoje
+8. quem responde as mensagens do whatsapp
+9. quanto tempo por dia vai em atendimento manual
+10. já perdeu paciente por demora em responder
+
+**Categoria 2 — Dores operacionais**
+11. agenda com buracos no meio do dia
+12. paciente que não comparece sem avisar
+13. whatsapp acumulando mensagens sem resposta
+14. secretária sobrecarregada com tarefas manuais
+15. dificuldade de lembrar paciente do retorno
+16. perda de receita com no-show
+17. fila de espera desorganizada
+18. dificuldade de cobrar confirmação de consulta
+19. paciente que some depois da primeira consulta
+20. sem relatório de quanto atendeu no mês
+
+**Categoria 3 — Implicações financeiras**
+21. quanto representa um no-show em receita
+22. paciente inativo é receita que não volta
+23. secretária custa caro para fazer tarefa que sistema faz
+24. clínica que não confirma consulta perde mais de 20% da agenda
+25. custo de oportunidade de agenda vazia
+26. paciente bem atendido indica outros
+27. retorno automático aumenta recorrência
+28. clínica organizada cresce mais rápido
+29. automação libera médico para atender mais
+30. sistema paga ele mesmo com uma consulta recuperada
+
+**Categoria 4 — Need-payoff (valor percebido)**
+31. imagina confirmar toda a agenda automaticamente
+32. e se o sistema avisasse o paciente do retorno sem você lembrar
+33. como seria ter relatório de atendimento pronto toda semana
+34. e se o whatsapp respondesse fora do horário sozinho
+35. paciente que some poderia receber mensagem automática
+36. agenda cheia com zero ligação da secretária
+37. prontuário acessível em qualquer dispositivo
+38. quanto tempo você economizaria com agendamento automático
+39. e se você soubesse exatamente quantos pacientes inativos tem
+40. sistema que trabalha enquanto você dorme
+
+**Categoria 5 — Proposta e fechamento**
+41. posso te mostrar como funciona em 15 minutos
+42. sem fidelidade no início
+43. configuração rápida e suporte incluso
+44. já atende clínicas de estética odontologia e fisioterapia
+45. integra com o whatsapp que você já usa
+46. não precisa trocar de celular nem número
+47. relatórios prontos sem configurar nada
+48. recuperação de pacientes ativa desde o primeiro dia
+49. trial disponível para você testar
+50. quando seria um bom momento para conversar
+
+### Autoracer — 30 frases × 5 categorias
+
+**Categoria 1 — Interesse inicial**
+1. como você anuncia os veículos hoje
+2. usa olx icarros webmotors ou só instagram
+3. a revendedora tem site próprio
+4. quantos veículos tem no estoque agora
+5. os clientes são daqui do vale mesmo
+6. comprador de fora do vale costuma aparecer
+7. quanto tempo fica um carro parado em média
+8. tem vendedor que trabalha só no boca a boca
+9. usa vídeo para mostrar os veículos
+10. como o cliente chega até você hoje
+
+**Categoria 2 — Dores de visibilidade**
+11. plataforma grande cobra caro e traz pouco resultado local
+12. instagram não organiza estoque direito
+13. foto não mostra o carro como vídeo mostra
+14. cliente de fora do vale some sem fechar
+15. concorrência com anúncio mais bonito aparece primeiro
+16. difícil de se destacar em plataforma nacional
+17. sem filtro por região o comprador local se perde
+18. estoque desatualizado espanta comprador
+19. sem vídeo o cliente não se interessa antes de visitar
+20. custo por lead em plataforma grande é alto
+
+**Categoria 3 — Implicações**
+21. carro parado é custo de financiamento e IPVA
+22. vendedor sem lead qualificado perde tempo
+23. comprador local prefere comprar perto de casa
+24. vídeo curto converte mais que dez fotos
+25. plataforma local tem menos concorrência
+26. cliente do vale conhece a revendedora pela reputação
+27. giro rápido do estoque aumenta margem
+28. anúncio profissional passa mais confiança
+29. comprador de seminovo pesquisa muito antes de ir
+30. quem aparece primeiro online fecha mais
+
+**Categoria 4 — Need-payoff**
+31. imagina seu estoque inteiro com vídeo curto
+32. e se compradores do vale buscassem especificamente na sua plataforma
+33. como seria ter lead qualificado só da região
+34. e se o anúncio atualizasse sozinho quando vender
+35. vitrine digital só do vale do paraíba
+36. comprador que já viu o vídeo chega mais decidido
+37. e se você gastasse menos que na plataforma grande e vendesse mais local
+38. estoque organizado com filtro de marca modelo ano cor
+39. reputação da revendedora visível para quem pesquisa
+40. notificação quando alguém tem interesse no veículo
+
+**Categoria 5 — Proposta**
+41. posso te mostrar a plataforma funcionando agora
+42. custo menor que uma plataforma nacional
+43. foco total no vale do paraíba
+44. vídeo curto incluso no plano
+45. sem fidelidade para começar
+46. anúncio no ar em menos de uma hora
+47. já tem revendedoras da região cadastradas
+48. comprador local já está buscando
+49. suporte direto sem call center
+50. quando você quer colocar o estoque no ar
