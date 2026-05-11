@@ -28,9 +28,10 @@ const salesMessages = [
 const LoginPage = () => {
   const { quickAccess } = useAuth()
   const [loading, setLoading] = useState(false)
+  const [error] = useState<string | null>(null)
   const [activeMsg, setActiveMsg] = useState(0)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       setActiveMsg((prev) => (prev + 1) % salesMessages.length)
     }, 4000)

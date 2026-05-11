@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '../services/supabase'
-import { Users, TrendingUp, CheckCircle2, Clock, ArrowUpRight, ArrowDownRight, DollarSign, Activity } from 'lucide-react'
+import { Users, TrendingUp, CheckCircle2, Clock, MessageSquare, Send, XCircle, Zap } from 'lucide-react'
 
 interface Lead {
   id: string

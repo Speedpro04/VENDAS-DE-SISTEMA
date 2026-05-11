@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../services/supabase'
 import {
   Plus, Search, Upload, Send, MapPin, Trash2, Eye,
-  Building2, Car, Anchor, X, Sparkles, RefreshCw
+  Building2, Car, Anchor, X, Sparkles, RefreshCw, Globe
 } from 'lucide-react'
 
 interface Lead {
