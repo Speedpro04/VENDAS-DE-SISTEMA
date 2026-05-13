@@ -89,7 +89,22 @@ const LeadsPage = () => {
     const novos = leads.filter(l => l.estagio === 'novo')
     if (novos.length === 0) return alert('Nenhum lead novo para disparar')
     if (!confirm(`Disparar para ${novos.length} leads novos?`)) return
-    alert(`Disparo em lote iniciado para ${novos.length} leads`)
+    
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/scheduler/trigger-now`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      
+      if (response.ok) {
+        alert(`Disparo em lote iniciado com sucesso!`)
+      } else {
+        alert('Erro ao disparar em lote. Verifique se o worker do Celery está rodando.')
+      }
+    } catch (err) {
+      alert('Erro de conexão com o servidor.')
+    }
   }
 
   const handleCSVImport = async (e: React.ChangeEvent<HTMLInputElement>) => {

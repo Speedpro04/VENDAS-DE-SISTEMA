@@ -3,6 +3,8 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 interface AuthContextType {
   user: { email: string } | null
   loading: boolean
+  activeSystem: string
+  setActiveSystem: (system: string) => void
   quickAccess: () => void
   signOut: () => void
 }
@@ -21,7 +23,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem('sqr_user')
     return saved ? JSON.parse(saved) : null
   })
+  const [activeSystem, setActiveSystem] = useState(() => {
+    return localStorage.getItem('sqr_active_system') || 'Solara Connect'
+  })
   const [loading] = useState(false)
+
+  const handleSetSystem = (system: string) => {
+    setActiveSystem(system)
+    localStorage.setItem('sqr_active_system', system)
+  }
 
   const quickAccess = () => {
     const u = { email: 'kd3online@gmail.com' }
@@ -35,7 +45,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, quickAccess, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      activeSystem, 
+      setActiveSystem: handleSetSystem, 
+      quickAccess, 
+      signOut 
+    }}>
       {children}
     </AuthContext.Provider>
   )
