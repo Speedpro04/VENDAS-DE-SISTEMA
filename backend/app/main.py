@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import leads, webhook, campanhas, outscraper, scheduler
+from app.routers import leads, webhook, campanhas, outscraper, scheduler, assistente
 from app.core.config import settings
 
 app = FastAPI(title="SQR Vendas API", version="1.0.0")
@@ -18,6 +18,7 @@ app.include_router(webhook.router, prefix="/webhook", tags=["Webhook"])
 app.include_router(campanhas.router, prefix="/campanhas", tags=["Campanhas"])
 app.include_router(outscraper.router, prefix="/outscraper", tags=["Outscraper"])
 app.include_router(scheduler.router, prefix="/scheduler", tags=["Scheduler"])
+app.include_router(assistente.router, prefix="/assistente", tags=["Assistente IA"])
 
 @app.get("/health")
 def health():

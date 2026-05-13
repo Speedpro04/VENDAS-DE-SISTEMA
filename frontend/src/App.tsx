@@ -4,9 +4,10 @@ import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
 import LeadsPage from './pages/LeadsPage'
 import ConfigPage from './pages/ConfigPage'
+import AssistentePage from './pages/AssistentePage'
 import {
   LayoutDashboard, Users, Settings, LogOut, Zap,
-  Building2, Car, Anchor
+  Building2, Car, Anchor, MessageCircle
 } from 'lucide-react'
 
 const Sidebar = () => {
@@ -28,6 +29,9 @@ const Sidebar = () => {
         </NavLink>
         <NavLink to="/config" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
           <Settings size={20} /> Configurações
+        </NavLink>
+        <NavLink to="/assistente" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+          <MessageCircle size={20} /> Tira-Dúvidas IA
         </NavLink>
 
         <div style={{ margin: '20px 4px 10px', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 16 }}>
@@ -90,6 +94,7 @@ const AppLayout = () => (
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/leads" element={<LeadsPage />} />
         <Route path="/config" element={<ConfigPage />} />
+        <Route path="/assistente" element={<AssistentePage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </div>
