@@ -5,23 +5,23 @@ import { Settings, MessageSquare, Clock, Save, CheckCircle2, Mail, Zap } from 'l
 const ConfigPage = () => {
   const [saved, setSaved] = useState(false)
   const [config, setConfig] = useState({
-    evolution_url: '',
-    evolution_key: '',
-    evolution_instance: '',
-    ai_base_url: 'https://integrate.api.nvidia.com/v1',
-    ai_api_key: '',
-    ai_model: 'deepseek-ai/deepseek-v4-flash',
-    smtp_host: '',
+    evolution_url: import.meta.env.VITE_EVOLUTION_URL || '',
+    evolution_key: import.meta.env.VITE_EVOLUTION_KEY || '',
+    evolution_instance: import.meta.env.VITE_EVOLUTION_INSTANCE || '',
+    ai_base_url: import.meta.env.VITE_AI_BASE_URL || 'https://integrate.api.nvidia.com/v1',
+    ai_api_key: import.meta.env.VITE_AI_API_KEY || '',
+    ai_model: import.meta.env.VITE_AI_MODEL || 'deepseek-ai/deepseek-v4-flash',
+    smtp_host: 'smtp.hostinger.com',
     smtp_port: '587',
-    smtp_user: '',
+    smtp_user: 'vendas@solaraconnect.online',
     smtp_pass: '',
-    smtp_from: '',
-    webhook_url: '',
+    smtp_from: 'Equipe SQR Vendas <vendas@solaraconnect.online>',
+    webhook_url: `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/webhook/evolution`,
     intervalo_min: '24',
     max_tentativas: '3',
     produto_padrao: 'solara_connect',
-    horario_inicio: '08:00',
-    horario_fim: '20:00',
+    horario_inicio: '00:00',
+    horario_fim: '23:59',
   })
 
   const handleSave = () => {
