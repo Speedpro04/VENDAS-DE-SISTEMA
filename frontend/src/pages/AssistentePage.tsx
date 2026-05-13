@@ -15,19 +15,19 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const AssistentePage = () => {
   const [pergunta, setPergunta] = useState('')
-  const [produto, setProduto] = useState<Produto>('all')
-  const [publico, setPublico] = useState<Publico>('interno')
+  const [produto, setProduto] = useState<Produto>('solara_connect')
+  const [publico, setPublico] = useState<Publico>('cliente')
   const [loading, setLoading] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      text: 'Pronto para tirar duvidas dos 3 SaaS. Pergunte sobre processos, objecoes, casos de uso, implementacao ou abordagem comercial.',
+      text: 'Assistente Solara pronto. Pergunte sobre faltas, confirmacoes, reengajamento e abordagem comercial para contratantes.',
     },
   ])
 
   const placeholder = useMemo(() => {
     if (publico === 'cliente') return 'Ex: Como o Solara Connect reduz faltas na agenda?'
-    return 'Ex: Monte um argumento para contornar objecao de automacao no AutoRacer.'
+    return 'Ex: Monte um roteiro interno para recuperar pacientes inativos.'
   }, [publico])
 
   const submit = async (e: FormEvent) => {
