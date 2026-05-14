@@ -1,0 +1,359 @@
+{
+  "Marinas": [],
+  "Clinicas_Medicas": [
+    {
+      "Nome": "Medsel Clínica Médica",
+      "Endereco": "",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3922-3357"
+    },
+    {
+      "Nome": "Pró Clínica São José dos Campos",
+      "Endereco": "Consultório médico ·  · R. Maj. Francisco de Paula Elias, 217",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3042-1832"
+    },
+    {
+      "Nome": "Valle Centro Médico em São José dos Campos",
+      "Endereco": "Centro médico ·  · Av. das Rosas, 91",
+      "Telefone": "Aberto · Fecha 17:00 · (12) 99636-5144"
+    },
+    {
+      "Nome": "Centro Médico ViValle: Consultas, Centro Médico, Multiclínica, Clínica Médica, São José dos Campos SP",
+      "Endereco": "Centro médico ·  · R. Carlos Maria Auricchio, 70",
+      "Telefone": "Aberto · Fecha 19:00 · (12) 3003-3230"
+    },
+    {
+      "Nome": "Clínica Sul - Santa Casa São José dos Campos",
+      "Endereco": "Ambulatório ·  · Av. Andrômeda, 1939",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3876-1999"
+    },
+    {
+      "Nome": "SOLUMEDI SJC Exame - Médicos - Ultrassom - Laboratório - Endoscopia - Tomografia - exames para concursos etc",
+      "Endereco": "Centro de diagnóstico médico por imagem ·  · R. Vilaça, 224",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3209-0105"
+    },
+    {
+      "Nome": "Clínica Oriente Santa Casa São José dos Campos",
+      "Endereco": "Clínica especializada ·  · R. Andorra, 500",
+      "Telefone": "Aberto · Fecha 19:00 · (12) 3876-1999"
+    },
+    {
+      "Nome": "Patrocinado",
+      "Endereco": "Dra. Tássia Tuan - Médica",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99774-9961"
+    },
+    {
+      "Nome": "Patrocinado",
+      "Endereco": "Oftalmologista · 149 Rua Equador",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 98834-2019"
+    },
+    {
+      "Nome": "Clinica de Saúde Taubaté",
+      "Endereco": "",
+      "Telefone": "Aberto · Fecha 19:00 · (12) 3426-1072"
+    },
+    {
+      "Nome": "Clínica Taubaté - Santa Casa São José dos Campos",
+      "Endereco": "Clínica especializada ·  · Av. Charles Schnneider, 395",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3876-1999"
+    },
+    {
+      "Nome": "Dr. Saúde Taubaté",
+      "Endereco": "Médico ·  · R. Dr. Souza Alves, 288",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 98701-7615"
+    },
+    {
+      "Nome": "Clínica Taubaté - Unidade 2",
+      "Endereco": "Clínica de saúde reprodutiva ·  · R. XV de Novembro, 159",
+      "Telefone": "(12) 3426-1072"
+    },
+    {
+      "Nome": "SPX Clínica - Taubaté",
+      "Endereco": "Centro de diagnósticos ·  · R. Portugal, 222",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3608-2770"
+    },
+    {
+      "Nome": "Clínica Popular Dr. Namedida | Saúde Taubaté",
+      "Endereco": "Clínica especializada ·  · R. Juca Esteves, 457",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99129-9830"
+    },
+    {
+      "Nome": "Climed Clinica Medica",
+      "Endereco": "Serviço de saúde ocupacional ·  · R. Bernardino de Campos, 262",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3952-4701"
+    },
+    {
+      "Nome": "Centro Médico",
+      "Endereco": "Policlínica · R. Antônio Afonso, 307",
+      "Telefone": "Aberto 24 horas · (12) 3955-9900"
+    },
+    {
+      "Nome": "Laboratório Unidade Médica - Central",
+      "Endereco": "Laboratório ·  · R. Luíz Simon, 75",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 3953-2778"
+    },
+    {
+      "Nome": "INOVA Clínica de Ultrassonografia - Jacareí",
+      "Endereco": "Centro de diagnósticos ·  · R. Batista Scavone, 165",
+      "Telefone": "Aberto · Fecha 17:00 · (12) 3961-1019"
+    },
+    {
+      "Nome": "Hospital de Clínicas Antônio Afonso - Rua Antônio Afonso - Centro, Jacareí - SP, Brasil",
+      "Endereco": "Hospital particular ·  · R. Antônio Afonso, 307",
+      "Telefone": "Aberto 24 horas · (12) 3955-9900"
+    },
+    {
+      "Nome": "Saint Clair | Clínica Médica Multidisciplinar, Vacinas e Infusões",
+      "Endereco": "Clínica especializada ·  · Boulevard Office Mall - R. Tiradentes, 299 - Salas 1001 a 1009",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99740-7466"
+    },
+    {
+      "Nome": "MDI- MEDICINA DIAGNÓSTICA POR IMAGEM",
+      "Endereco": "Centro de diagnóstico médico por imagem ·  · R. Antônio Afonso, 144",
+      "Telefone": "Aberto · Fecha 21:00 · (12) 3954-5040"
+    },
+    {
+      "Nome": "Campo Mais Saúde",
+      "Endereco": "Consultório médico ·  · R. Barão de Jacareí, 786",
+      "Telefone": "Aberto · Fecha 18:00 · (12) 2127-2929"
+    }
+  ],
+  "Dentistas": [
+    {
+      "Nome": "Patrocinado",
+      "Endereco": "Cotrim Odontologia Especializada - Dentista SJC",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99109-2299"
+    },
+    {
+      "Nome": "Patrocinado",
+      "Endereco": "Clínica odontológica · 82 Rua Honório Jovino",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 98882-0251"
+    },
+    {
+      "Nome": "Odonto Special - São José dos Campos",
+      "Endereco": "Clínica odontológica ·  · Av. Engenheiro Francisco José Longo, 540",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99699-7555"
+    },
+    {
+      "Nome": "Art En Dente",
+      "Endereco": "Clínica odontológica ·  · Av. Heitor Villa Lobos, 1657",
+      "Telefone": "Aberto 24 horas · (12) 3923-6008"
+    },
+    {
+      "Nome": "Sorridents Clínicas Odontológicas Centro São José dos Campos",
+      "Endereco": "Clínica odontológica ·  · Av. Dr. Nélson d'Ávila, 102",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3923-2622"
+    },
+    {
+      "Nome": "Odontologia Especializada Dra. Amanda",
+      "Endereco": "Agendar on-line",
+      "Telefone": "(12) 99751-3110"
+    },
+    {
+      "Nome": "Vale Odontologia",
+      "Endereco": "Clínica odontológica ·  · Av. Antônio da Costa Nunes, 106",
+      "Telefone": "Fechado · Abre às 08:30 · (12) 3912-3468"
+    },
+    {
+      "Nome": "INTEGRA Odonto SJC",
+      "Endereco": "Clínica odontológica ·  · Av. Dr. Ademar de Barros, 566 - Sala 1008",
+      "Telefone": "Fechado · Abre às 14:30 · (12) 4102-0710"
+    },
+    {
+      "Nome": "Dr. Vitor Guimarães/Dentista Pinda-Taubaté",
+      "Endereco": "Dr. Vitor Guimarães/Dentista Pinda-Taubaté",
+      "Telefone": "Aberto 24 horas · (12) 98134-5353"
+    },
+    {
+      "Nome": "DENTISTA 24H - Atendemos todos os dias",
+      "Endereco": "Dentista ·  · R. Quatro de Março, 503",
+      "Telefone": "(12) 99107-5049"
+    },
+    {
+      "Nome": "Dr. Lucas Vieira | Endodontista em Taubaté",
+      "Endereco": "Endodontista · Av. Mons. Antônio do Nasc. c Castro, 152",
+      "Telefone": "Aberto 24 horas · (12) 98890-0952"
+    },
+    {
+      "Nome": "Studio Dentístico Benjamin Amaral",
+      "Endereco": "Dentista ·  · Edifício Square - Av. Charles Schnneider, 1236 - Sala 4A - Térreo",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99654-4010"
+    },
+    {
+      "Nome": "Mestre do Implante - Taubaté",
+      "Endereco": "Clínica odontológica ·  · R. Dr. Jorge Winther, 54",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 98144-0519"
+    },
+    {
+      "Nome": "Consultório Dra Jaqueline Bellato",
+      "Endereco": "Dentista · Edificio Office Tower - R. Conselheiro Moreira de Barros, 159 - Sala 46",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3426-0989"
+    },
+    {
+      "Nome": "Prime Odonto Taubaté - Implante Dentário em Taubaté",
+      "Endereco": "Dentista · R. Eng. Fernando de Matos, 296",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3621-6498"
+    },
+    {
+      "Nome": "Dra. Bianca Makiya Ferraro - Dentista Taubaté",
+      "Endereco": "Dentista ·  · R. Maria Joaquina de Almeida, 28 - 1° Andar",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99741-4285"
+    },
+    {
+      "Nome": "Odontoclinic - Jacareí",
+      "Endereco": "Dentista ·  · R. Bernardino de Campos, 181",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3959-4409"
+    },
+    {
+      "Nome": "Dra. Amanda Soares",
+      "Endereco": "Dentista ·  · R. Carlos Navarro da Cruz, 145 - Sala 5",
+      "Telefone": "Aberto · Fecha 20:30 · (12) 99127-1231"
+    },
+    {
+      "Nome": "Dra Ana Macarini",
+      "Endereco": "Dentista ·  · Boulevard Office & Mall, R. Tiradentes, 299 - Sala 1214",
+      "Telefone": "Fechado · Abre às 08:30 · (12) 98122-8361"
+    },
+    {
+      "Nome": "Dra Gabrielly Ferreira",
+      "Endereco": "Dentista · R. Antônio Afonso, 384",
+      "Telefone": "Aberto 24 horas · (12) 99710-0919"
+    },
+    {
+      "Nome": "Doutor Sorriso Mais Jacareí",
+      "Endereco": "Dentista ·  · R. Alfredo Schurig, 106",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3354-7406"
+    },
+    {
+      "Nome": "Sorridents",
+      "Endereco": "Dentista ·  · R. Barão de Jacareí, 122",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99108-6625"
+    },
+    {
+      "Nome": "Sorrix Jacareí - Unidade Barão",
+      "Endereco": "Clínica odontológica ·  · R. Barão de Jacareí, 207",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3962-3004"
+    },
+    {
+      "Nome": "Centro Odontológico Do Povo",
+      "Endereco": "",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99723-5753"
+    }
+  ],
+  "Lojas_Veiculos": [
+    {
+      "Nome": "Patrocinado",
+      "Endereco": "",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 98213-1007"
+    },
+    {
+      "Nome": "Barão Veículos - São José dos Campos",
+      "Endereco": "Revendedora de carros usados ·  · R. Paraibuna, 526",
+      "Telefone": "Fechado · Abre às 08:30 · (12) 98199-3522"
+    },
+    {
+      "Nome": "Mário Veículos SJC",
+      "Endereco": "Revendedora de carros usados ·  · Av. Rui Barbosa, 395",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 98895-3341"
+    },
+    {
+      "Nome": "VALE MAIS VEÍCULOS",
+      "Endereco": "Revendedora de carros usados ·  · Av. Pres. Juscelino Kubitschek, 5595",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3936-9387"
+    },
+    {
+      "Nome": "P1 - Ponto 1 Veículos - SJC - São José dos Campos",
+      "Endereco": "Revendedora de carros usados ·  · Av. Cidade Jardim, 6401",
+      "Telefone": "Fechado · Abre às 08:30 · (12) 3966-8699"
+    },
+    {
+      "Nome": "Altavia Veículos Taubaté",
+      "Endereco": "Concessionária ·  · Av. Francisco Barreto Leme, 190",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3624-8500"
+    },
+    {
+      "Nome": "Mega Veículos - Taubaté",
+      "Endereco": "Revendedora de carros usados ·  · R. Juca Esteves, 615",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99790-2792"
+    },
+    {
+      "Nome": "Vicenza Veículos | Carros & Motos Multimarcas",
+      "Endereco": "Concessionária ·  · Av. Bandeirantes, Rod. Pres. Dutra, 1129 E",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99174-9065"
+    },
+    {
+      "Nome": "Axis Motors - Loja de Carros em Taubaté",
+      "Endereco": "Revendedora de carros usados ·  · Av. Santa Luiza de Marillac, 911",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99675-6475"
+    },
+    {
+      "Nome": "San-X Motors Loja de Carros Taubaté",
+      "Endereco": "Revendedora de carros usados ·  · Av. Independência, 395",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99731-1991"
+    },
+    {
+      "Nome": "Rainha Veículos Taubaté",
+      "Endereco": "Revendedora de carros usados ·  · Via Auto Shopping - Av. Dom Pedro I, 7231 - Lojas: 8, 17 e 18",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3682-2051"
+    },
+    {
+      "Nome": "Forlim Multimarcas",
+      "Endereco": "Concessionária de veículos motorizados ·  · Av. Pres. Campos Sales, 114",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3881-2734"
+    },
+    {
+      "Nome": "Israel Veí­culos",
+      "Endereco": "Revendedora de carros usados ·  · Av. Miguel Varlez, 165",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3882-1078"
+    },
+    {
+      "Nome": "Madrid Veículos Em Caraguatatuba",
+      "Endereco": "Revendedora de carros usados ·  · Av. Rio Branco, 157",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 99182-6319"
+    },
+    {
+      "Nome": "Moura Multicar",
+      "Endereco": "Revendedora de carros usados ·  · Av. Frei Pacífico Wagner, 611",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3211-5519"
+    },
+    {
+      "Nome": "1000 Valle Multimarcas Serramar Shopping",
+      "Endereco": "Concessionária ·  · Av. José Herculano, 1086 - LOJA AB 02C",
+      "Telefone": "Fechado · Abre às 10:00 · (12) 3600-8206"
+    },
+    {
+      "Nome": "Auto Maia",
+      "Endereco": "Concessionária de veículos motorizados ·  · Av. Rio Branco, 125",
+      "Telefone": "Fechado · Abre às 08:30 · (12) 3883-9090"
+    },
+    {
+      "Nome": "Ubatuba Automóveis",
+      "Endereco": "Concessionária ·  · Rua Professor Thomaz Galhardo, 655",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99652-2788"
+    },
+    {
+      "Nome": "Alison Automóveis",
+      "Endereco": "Revendedora de carros usados ·  · R. Maria Vitória Jean, 362",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 99609-0720"
+    },
+    {
+      "Nome": "Prado Veiculos",
+      "Endereco": "Concessionária ·  · Rua Professor Thomaz Galhardo, 1197",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 3833-9709"
+    },
+    {
+      "Nome": "Calderaro Motors",
+      "Endereco": "Revendedora de carros usados ·  · Rua Dona Maria Alves, 1024",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 2102-8592"
+    },
+    {
+      "Nome": "Tony Veículos",
+      "Endereco": "",
+      "Telefone": "Fechado · Abre às 09:00 · (12) 3208-0839"
+    },
+    {
+      "Nome": "CASSINHA VEÍCULOS",
+      "Endereco": "Concessionária ·  · R. Conceição, 969",
+      "Telefone": "Fechado · Abre às 08:00 · (12) 97403-0404"
+    }
+  ]
+}
