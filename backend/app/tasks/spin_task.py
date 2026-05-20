@@ -3,6 +3,7 @@ from app.core.supabase_client import supabase
 from app.services.ai_service import ai_service
 from app.services.evolution_service import evolution_service
 import asyncio
+from datetime import datetime, timezone
 
 @celery_app.task(name="app.tasks.spin_task.processar_resposta_ai")
 def processar_resposta_ai(lead_id, mensagem_cliente):
@@ -33,8 +34,7 @@ def processar_resposta_ai(lead_id, mensagem_cliente):
     # 3. Gera mensagem com IA
     # Celery tasks são síncronas por padrão, então usamos run_until_complete se necessário ou apenas tornamos o serviço síncrono
     # Para simplificar aqui, vamos usar um wrapper ou chamar síncrono
-    loop = asyncio.get_event_loop()
-    mensagem_ia = loop.run_until_complete(ai_service.gerar_mensagem_spin(
+    mensagem_ia = asyncio.run(ai_service.gerar_mensagem_spin(
         lead["nome"], 
         lead["produto"], 
         historico, 
@@ -55,7 +55,7 @@ def processar_resposta_ai(lead_id, mensagem_cliente):
         
         supabase.table("leads").update({
             "estagio": proximo_estagio,
-            "ultima_resposta": "now()"
+            "ultima_resposta": datetime.now(timezone.utc).isoformat()
         }).eq("id", lead_id).execute()
         
     return f"Mensagem enviada para {lead['nome']}"

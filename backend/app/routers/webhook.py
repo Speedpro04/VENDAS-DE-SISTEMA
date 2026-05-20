@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Request, Header, HTTPException
+from fastapi import APIRouter, Request
 from app.core.supabase_client import supabase
 from app.tasks.spin_task import processar_resposta_ai
-import json
 
 router = APIRouter()
+
+def _only_digits(value: str) -> str:
+    return "".join(ch for ch in (value or "") if ch.isdigit())
 
 @router.post("/evolution")
 async def evolution_webhook(request: Request):
@@ -22,7 +24,10 @@ async def evolution_webhook(request: Request):
             return {"status": "ignored"}
             
         remote_jid = key.get("remoteJid") # Ex: 5511999999999@s.whatsapp.net
+        if not remote_jid or "@" not in remote_jid:
+            return {"status": "ignored_invalid_sender"}
         phone = remote_jid.split("@")[0]
+        phone_digits = _only_digits(phone)
         
         # Conteúdo da mensagem
         text = ""
@@ -34,8 +39,11 @@ async def evolution_webhook(request: Request):
         if not text:
             return {"status": "no_text"}
             
-        # 1. Busca o lead pelo telefone
-        response = supabase.table("leads").select("*").ilike("telefone", f"%{phone}%").eq("ativo", True).execute()
+        # 1. Busca o lead pelo telefone (com fallback para diferentes formatos)
+        response = supabase.table("leads").select("*").ilike("telefone", f"%{phone_digits}%").eq("ativo", True).execute()
+        if not response.data and phone_digits.startswith("55"):
+            local_phone = phone_digits[2:]
+            response = supabase.table("leads").select("*").ilike("telefone", f"%{local_phone}%").eq("ativo", True).execute()
         
         if response.data:
             lead = response.data[0]
@@ -52,5 +60,13 @@ async def evolution_webhook(request: Request):
             processar_resposta_ai.delay(lead["id"], text)
             
             return {"status": "processing", "lead_id": lead["id"]}
+
+        # Se não encontrou lead, registra somente para auditoria
+        supabase.table("mensagens").insert({
+            "direcao": "entrada",
+            "conteudo": text,
+            "canal": "whatsapp"
+        }).execute()
+        return {"status": "received_without_lead", "phone": phone_digits}
             
     return {"status": "received"}
