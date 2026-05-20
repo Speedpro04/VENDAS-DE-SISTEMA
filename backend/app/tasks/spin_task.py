@@ -32,6 +32,7 @@ def processar_resposta_ai(lead_id, mensagem_cliente):
         proximo_estagio = "necessidade"
 
     # 3. Gera mensagem com IA
+<<<<<<< Updated upstream
     # Celery tasks são síncronas por padrão, então usamos run_until_complete se necessário ou apenas tornamos o serviço síncrono
     # Para simplificar aqui, vamos usar um wrapper ou chamar síncrono
     mensagem_ia = asyncio.run(ai_service.gerar_mensagem_spin(
@@ -40,6 +41,27 @@ def processar_resposta_ai(lead_id, mensagem_cliente):
         historico, 
         proximo_estagio
     ))
+=======
+    try:
+        mensagem_ia = asyncio.run(ai_service.gerar_mensagem_spin(
+            lead["nome"], 
+            lead["produto"], 
+            historico, 
+            proximo_estagio
+        ))
+    except RuntimeError:
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        mensagem_ia = loop.run_until_complete(ai_service.gerar_mensagem_spin(
+            lead["nome"], 
+            lead["produto"], 
+            historico, 
+            proximo_estagio
+        ))
+>>>>>>> Stashed changes
 
     # 4. Envia mensagem via WhatsApp
     sucesso = evolution_service.send_whatsapp(lead["telefone"], mensagem_ia)
@@ -51,6 +73,14 @@ def processar_resposta_ai(lead_id, mensagem_cliente):
             "direcao": "saida",
             "conteudo": mensagem_ia,
             "estagio_spin": proximo_estagio
+        }).execute()
+
+        # Registro detalhado de cada abordagem SPIN
+        supabase.table("spin_logs").insert({
+            "lead_id": lead_id,
+            "estagio": proximo_estagio,
+            "mensagem": mensagem_ia,
+            "data_hora": "now()"
         }).execute()
         
         supabase.table("leads").update({

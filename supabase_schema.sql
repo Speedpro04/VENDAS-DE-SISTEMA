@@ -57,12 +57,27 @@ CREATE TABLE IF NOT EXISTS public.scheduler_jobs (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- TABELA: spin_logs (registro de TODAS as abordagens SPIN)
+CREATE TABLE IF NOT EXISTS public.spin_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lead_id UUID REFERENCES public.leads(id) ON DELETE CASCADE,
+  estagio TEXT NOT NULL,
+  mensagem TEXT NOT NULL,
+  canal TEXT DEFAULT 'whatsapp',
+  enviado BOOLEAN DEFAULT true,
+  erro TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- ÍNDICES
 CREATE INDEX IF NOT EXISTS idx_leads_produto ON public.leads(produto);
 CREATE INDEX IF NOT EXISTS idx_leads_estagio ON public.leads(estagio);
 CREATE INDEX IF NOT EXISTS idx_leads_ativo ON public.leads(ativo);
 CREATE INDEX IF NOT EXISTS idx_mensagens_lead ON public.mensagens(lead_id);
 CREATE INDEX IF NOT EXISTS idx_scheduler_agendado ON public.scheduler_jobs(agendado_para) WHERE NOT executado;
+CREATE INDEX IF NOT EXISTS idx_spin_logs_lead ON public.spin_logs(lead_id);
+CREATE INDEX IF NOT EXISTS idx_spin_logs_estagio ON public.spin_logs(estagio);
+CREATE INDEX IF NOT EXISTS idx_spin_logs_created ON public.spin_logs(created_at);
 
 -- TRIGGER: updated_at automático
 CREATE OR REPLACE FUNCTION update_updated_at()
@@ -83,9 +98,11 @@ ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.mensagens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.campanhas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.scheduler_jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.spin_logs ENABLE ROW LEVEL SECURITY;
 
 -- Policies (acesso aberto para o service_role, anon pode ler/escrever)
 CREATE POLICY "leads_all" ON public.leads FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "mensagens_all" ON public.mensagens FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "campanhas_all" ON public.campanhas FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "scheduler_all" ON public.scheduler_jobs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "spin_logs_all" ON public.spin_logs FOR ALL USING (true) WITH CHECK (true);

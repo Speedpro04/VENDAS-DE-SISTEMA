@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Bot, Loader2, Send, Sparkles } from 'lucide-react'
-import { getApiBaseUrl } from '../lib/api'
+import { getApiUrl } from '../services/api'
 
 type Publico = 'interno' | 'cliente'
 type Produto = 'all' | 'solara_connect' | 'autoracer' | 'yachts_atlas'
@@ -12,7 +12,7 @@ interface Message {
   sources?: { product: string; source: string }[]
 }
 
-const API_BASE = getApiBaseUrl()
+
 
 const AssistentePage = () => {
   const [pergunta, setPergunta] = useState('')
@@ -41,7 +41,7 @@ const AssistentePage = () => {
     setLoading(true)
 
     try {
-      const res = await fetch(`${API_BASE}/assistente/ask`, {
+      const res = await fetch(`${getApiUrl()}/assistente/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pergunta: text, produto, publico }),

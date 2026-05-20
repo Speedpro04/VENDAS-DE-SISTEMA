@@ -11,10 +11,8 @@ import {
   Building2, Car, Anchor, MessageCircle, Plus, X, Phone, User
 } from 'lucide-react'
 import { supabase } from './services/supabase'
+import { getApiUrl } from './services/api'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getApiBaseUrl } from './lib/api'
-
-const apiUrl = getApiBaseUrl()
 
 const Sidebar = ({ onQuickAdd }: { onQuickAdd: () => void }) => {
   const { signOut, activeSystem, setActiveSystem } = useAuth()
@@ -160,6 +158,7 @@ const AppLayout = () => {
     } else {
       // TRIGGER AUTOMÁTICO: Assim que salva, já manda o comando para a IA começar
       try {
+        const apiUrl = getApiUrl()
         fetch(`${apiUrl}/scheduler/trigger-now`, { method: 'POST' }).catch(e => console.error('Erro trigger:', e))
       } catch (e) {}
 
@@ -255,7 +254,7 @@ const ProtectedRoute = () => {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0F0F14' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--color-bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <Zap size={48} color="#009C3B" style={{ marginBottom: 16 }} />
           <div style={{ color: '#888', fontSize: 14 }}>Carregando SQR Vendas...</div>

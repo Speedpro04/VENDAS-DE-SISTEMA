@@ -1,13 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Settings, MessageSquare, Clock, Save, CheckCircle2, Mail, Zap } from 'lucide-react'
-import { getApiBaseUrl } from '../lib/api'
-
-const apiUrl = getApiBaseUrl()
+import { Settings, MessageSquare, Clock, Save, CheckCircle2, Mail, Zap, Globe } from 'lucide-react'
 
 const ConfigPage = () => {
   const [saved, setSaved] = useState(false)
   const [config, setConfig] = useState({
+    api_url: import.meta.env.VITE_API_URL || 'http://localhost:8000',
     evolution_url: import.meta.env.VITE_EVOLUTION_URL || '',
     evolution_key: import.meta.env.VITE_EVOLUTION_KEY || '',
     evolution_instance: import.meta.env.VITE_EVOLUTION_INSTANCE || '',
@@ -19,13 +17,25 @@ const ConfigPage = () => {
     smtp_user: 'vendas@solaraconnect.online',
     smtp_pass: '',
     smtp_from: 'Equipe SQR Vendas <vendas@solaraconnect.online>',
-    webhook_url: `${apiUrl}/webhook/evolution`,
+    webhook_url: `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/webhook/evolution`,
     intervalo_min: '24',
     max_tentativas: '3',
     produto_padrao: 'solara_connect',
     horario_inicio: '00:00',
     horario_fim: '23:59',
   })
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('sqr_config')
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData)
+        setConfig(prev => ({ ...prev, ...parsed }))
+      } catch (e) {
+        console.error('Erro ao carregar do localStorage:', e)
+      }
+    }
+  }, [])
 
   const handleSave = () => {
     localStorage.setItem('sqr_config', JSON.stringify(config))
@@ -67,6 +77,25 @@ const ConfigPage = () => {
           {saved ? <><CheckCircle2 size={18} /> Salvo!</> : <><Save size={18} /> Salvar</>}
         </button>
       </div>
+
+      <Section icon={<Globe size={20} color="#009C3B" />} title="API do SQR Vendas (Backend)">
+        <div className="form-group" style={{ gridColumn: 'span 2' }}>
+          <label>URL do Servidor Backend</label>
+          <input 
+            style={inputStyle} 
+            value={config.api_url} 
+            onChange={e => {
+              const val = e.target.value
+              setConfig(prev => ({
+                ...prev,
+                api_url: val,
+                webhook_url: `${val.replace(/\/$/, '')}/webhook/evolution`
+              }))
+            }} 
+            placeholder="Ex: http://localhost:8000 ou https://api.seudominio.com" 
+          />
+        </div>
+      </Section>
 
       <Section icon={<MessageSquare size={20} color="#22C55E" />} title="WhatsApp — Evolution API">
         <div className="form-group"><label>URL da API</label><input style={inputStyle} value={config.evolution_url} onChange={e => setConfig({ ...config, evolution_url: e.target.value })} placeholder="https://evo.seudominio.com" /></div>

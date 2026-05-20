@@ -10,6 +10,16 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/montserrat/v29/JTVSjBV1oDFj5glYkHBx0w.woff2) format('woff2');
 }
+:root {
+  --color-bg: #F5F7FA;
+  --color-primary: #00FFC6;
+  --color-secondary: #00BFFF;
+  --color-accent: #FF00FF;
+  --color-text: #222222;
+  --color-card-bg: rgba(255,255,255,0.6);
+  --blur-bg: 12px;
+  --font-family: 'Inter', sans-serif;
+}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
