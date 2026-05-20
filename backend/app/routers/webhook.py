@@ -24,8 +24,11 @@ def _extract_text(message: dict) -> str:
         return (message.get("listResponseMessage") or {}).get("title", "") or ""
     return ""
 
-@router.post("/evolution")
+@router.api_route("/evolution", methods=["GET", "POST"])
 async def evolution_webhook(request: Request):
+    if request.method == "GET":
+        return {"status": "ok", "service": "evolution_webhook"}
+
     payload = await request.json()
     
     # Evolution API envia diferentes tipos de eventos
