@@ -4,11 +4,11 @@ from app.core.config import settings
 class EvolutionService:
     def __init__(self):
         self.base_url = settings.EVOLUTION_API_URL.rstrip("/")
-        self.api_key = settings.EVOLUTION_API_KEY
-        self.instance = settings.EVOLUTION_INSTANCE
+        self.api_key = (settings.EVOLUTION_API_KEY or "").strip()
+        self.instance = (settings.EVOLUTION_INSTANCE or "").strip()
 
     def send_whatsapp(self, phone, text):
-        if not self.base_url or not self.instance:
+        if not self.base_url or not self.instance or not self.api_key:
             print("ERRO: Evolution API não configurada.")
             return False
 
@@ -20,6 +20,9 @@ class EvolutionService:
         
         # Garante formato internacional
         clean_phone = "".join(filter(str.isdigit, phone))
+        if not clean_phone:
+            print("ERRO: Telefone inválido para envio WhatsApp.")
+            return False
         if not clean_phone.startswith("55"):
             clean_phone = "55" + clean_phone
             

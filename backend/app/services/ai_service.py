@@ -9,29 +9,51 @@ class AIService:
         )
 
     async def gerar_mensagem_spin(self, lead_nome, produto, contexto_conversa, estagio_atual):
+        produto_normalizado = (produto or "").strip().lower()
+        contexto = (contexto_conversa or "").lower()
+
         prompts = {
             "solara_connect": {
-                "situacao": f"O lead {lead_nome} é dono de uma clínica. O objetivo é entender a dor atual. Pergunte como ele lida com pacientes que não confirmam ou faltam hoje.",
-                "problema": f"Foque na perda financeira. Ajude o lead a perceber que cada 'buraco' na agenda é lucro que nunca volta.",
-                "implicacao": f"Gere urgência. Mostre que sem automação, a clínica está trabalhando para pagar custos fixos enquanto o lucro escorre pelo WhatsApp não respondido.",
-                "necessidade": f"Solara Connect: a solução definitiva. Mostre como a automação de confirmação e recuperação de leads vai colocar dinheiro no bolso dele imediatamente."
+                "situacao": f"O lead {lead_nome} é gestor de clínica. Descubra volume de no-show, taxa de confirmação e esforço manual da recepção.",
+                "problema": "Aprofunde a dor financeira: agenda furada, equipe sobrecarregada e paciente inativo sem recontato.",
+                "implicacao": "Mostre impacto mensal com números simples: cada horário vazio é receita perdida e custo fixo mantido.",
+                "necessidade": "Posicione Solara Connect com 7 dias de teste controlado: confirmação automática, reativação e ganho de ocupação."
             },
             "autoracer": {
-                "situacao": f"O lead {lead_nome} busca um carro premium. Pergunte sobre o que ele mais valoriza em um veículo (conforto, status, performance).",
-                "problema": f"Toque na insegurança do mercado de usados premium. O medo de pegar um carro com histórico oculto ou problemas mecânicos caros.",
-                "implicacao": f"Ressalte que uma escolha errada em um carro premium não é apenas um erro, é um prejuízo de dezenas de milhares de reais.",
-                "necessidade": f"Apresente a AutoRacer como o selo de confiança que filtra apenas o melhor do mercado, com auditoria completa para ele comprar sem medo."
+                "situacao": f"O lead {lead_nome} avalia carro premium. Descubra prazo de compra, faixa de investimento e critérios de confiança.",
+                "problema": "Explore medo de histórico oculto, custo pós-compra e perda de oportunidade por follow-up tardio.",
+                "implicacao": "Conecte risco a dinheiro e reputação: decisão errada no premium gera prejuízo alto e retrabalho.",
+                "necessidade": "Posicione AutoRacer com prova de confiança e processo consultivo: triagem, procedência e próxima ação clara."
             },
             "yachts_atlas": {
-                "situacao": f"O lead {lead_nome} tem interesse em embarcações. Pergunte se ele já possui uma ou se está buscando a primeira experiência de alto luxo.",
-                "problema": f"Exponha a 'dor do dono': a burocracia, a manutenção imprevisível e a dificuldade de manter a tripulação qualificada.",
-                "implicacao": f"Explique como um iate mal gerido se torna um dreno de energia e dinheiro, em vez de um refúgio de prazer.",
-                "necessidade": f"Yachts Atlas: a gestão inteligente. Transformamos a posse em puro prazer, cuidando de 100% da operação com transparência total."
+                "situacao": f"O lead {lead_nome} tem interesse náutico premium. Descubra perfil, objetivo de uso e momento de decisão.",
+                "problema": "Traga a dor de ciclo longo sem governança: proposta esfria, follow-up falha e carteira perde ritmo.",
+                "implicacao": "Mostre custo de oportunidade alto: negociações de alto valor travam por falta de cadência elegante.",
+                "necessidade": "Posicione Yachts Atlas com relacionamento premium previsível: cadência discreta, controle de fases e avanço de carteira."
             }
         }
 
+        playbooks = {
+            "solara_connect": "Tom consultivo e objetivo de agenda. Sempre puxar para métrica concreta: faltas, confirmações e ocupação.",
+            "autoracer": "Tom de confiança premium. Valorizar procedência, segurança da decisão e rapidez sem pressão.",
+            "yachts_atlas": "Tom elegante e discreto. Foco em previsibilidade de carteira e experiência de alto padrão."
+        }
+
+        objecoes = []
+        if any(t in contexto for t in ["caro", "preço", "preco", "valor", "orçamento", "orcamento"]):
+            objecoes.append("Se houver objeção de preço, responda com ROI e risco de manter como está, sem dar desconto automático.")
+        if any(t in contexto for t in ["já uso", "ja uso", "já temos", "ja temos", "crm", "planilha"]):
+            objecoes.append("Se já usa ferramenta, posicione como camada de cadência e inteligência, não substituição brusca.")
+        if any(t in contexto for t in ["sem tempo", "depois", "agora não", "agora nao"]):
+            objecoes.append("Se houver falta de tempo, proponha próximo passo mínimo: teste curto com meta objetiva.")
+        if any(t in contexto for t in ["não quero", "nao quero", "robot", "robô", "robo", "spam"]):
+            objecoes.append("Se houver medo de automação fria, reforçe personalização e controle humano nas mensagens.")
+
         # Seleciona o prompt base
-        prompt_base = prompts.get(produto, prompts["solara_connect"]).get(estagio_atual, "Conduza o lead para o próximo nível de interesse.")
+        produto_cfg = prompts.get(produto_normalizado, prompts["solara_connect"])
+        prompt_base = produto_cfg.get(estagio_atual, "Conduza o lead para o próximo nível de interesse.")
+        playbook = playbooks.get(produto_normalizado, playbooks["solara_connect"])
+        bloco_objecoes = " ".join(objecoes) if objecoes else "Antecipe a objeção mais provável do lead e responda antes da pergunta final."
 
         system_prompt = f"""
         Você é um Consultor de Vendas e Suporte Sênior da SQR Vendas, operando 24/7. 
@@ -52,6 +74,9 @@ class AIService:
         5. Se o lead tiver uma dúvida, responda com autoridade antes de seguir com a técnica de SPIN.
         6. Se o lead estiver no estágio 'necessidade', use gatilhos de escassez ou autoridade.
         7. {prompt_base}
+        8. Playbook do produto: {playbook}
+        9. {bloco_objecoes}
+        10. Estrutura obrigatória: Dor/ganho em 1 frase + prova/segurança em 1 frase + pergunta final de avanço.
         """
 
         try:

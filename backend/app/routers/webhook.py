@@ -7,6 +7,23 @@ router = APIRouter()
 def _only_digits(value: str) -> str:
     return "".join(ch for ch in (value or "") if ch.isdigit())
 
+def _extract_text(message: dict) -> str:
+    if not isinstance(message, dict):
+        return ""
+    if "conversation" in message:
+        return message.get("conversation", "") or ""
+    if "extendedTextMessage" in message:
+        return (message.get("extendedTextMessage") or {}).get("text", "") or ""
+    if "imageMessage" in message:
+        return (message.get("imageMessage") or {}).get("caption", "") or ""
+    if "videoMessage" in message:
+        return (message.get("videoMessage") or {}).get("caption", "") or ""
+    if "buttonsResponseMessage" in message:
+        return (message.get("buttonsResponseMessage") or {}).get("selectedDisplayText", "") or ""
+    if "listResponseMessage" in message:
+        return (message.get("listResponseMessage") or {}).get("title", "") or ""
+    return ""
+
 @router.post("/evolution")
 async def evolution_webhook(request: Request):
     payload = await request.json()
@@ -16,6 +33,8 @@ async def evolution_webhook(request: Request):
     
     if event_type == "messages.upsert":
         data = payload.get("data", {})
+        if isinstance(data, list):
+            data = data[0] if data else {}
         message = data.get("message", {})
         key = data.get("key", {})
         
@@ -26,15 +45,15 @@ async def evolution_webhook(request: Request):
         remote_jid = key.get("remoteJid") # Ex: 5511999999999@s.whatsapp.net
         if not remote_jid or "@" not in remote_jid:
             return {"status": "ignored_invalid_sender"}
+        if remote_jid.endswith("@g.us") or remote_jid == "status@broadcast":
+            return {"status": "ignored_non_direct_chat"}
         phone = remote_jid.split("@")[0]
         phone_digits = _only_digits(phone)
+        if not phone_digits:
+            return {"status": "ignored_invalid_phone"}
         
         # Conteúdo da mensagem
-        text = ""
-        if "conversation" in message:
-            text = message["conversation"]
-        elif "extendedTextMessage" in message:
-            text = message["extendedTextMessage"].get("text", "")
+        text = _extract_text(message).strip()
             
         if not text:
             return {"status": "no_text"}
