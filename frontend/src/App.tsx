@@ -12,6 +12,9 @@ import {
 } from 'lucide-react'
 import { supabase } from './services/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getApiBaseUrl } from './lib/api'
+
+const apiUrl = getApiBaseUrl()
 
 const Sidebar = ({ onQuickAdd }: { onQuickAdd: () => void }) => {
   const { signOut, activeSystem, setActiveSystem } = useAuth()
@@ -157,7 +160,6 @@ const AppLayout = () => {
     } else {
       // TRIGGER AUTOMÁTICO: Assim que salva, já manda o comando para a IA começar
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
         fetch(`${apiUrl}/scheduler/trigger-now`, { method: 'POST' }).catch(e => console.error('Erro trigger:', e))
       } catch (e) {}
 

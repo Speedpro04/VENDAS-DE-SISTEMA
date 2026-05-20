@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../services/supabase'
+import { getApiBaseUrl } from '../lib/api'
 import {
   Plus, Search, Upload, Send, MapPin, Trash2, Eye,
   Building2, Car, Anchor, X, Sparkles, RefreshCw, Globe
@@ -17,6 +18,8 @@ const produtos = [
   { value: 'autoracer', label: 'Auto Racer', icon: <Car size={16} />, color: '#EF4444' },
   { value: 'yachts_atlas', label: 'Yachts Atlas', icon: <Anchor size={16} />, color: '#C9A84C' },
 ]
+
+const apiUrl = getApiBaseUrl()
 
 const LeadsPage = () => {
   const [leads, setLeads] = useState<Lead[]>([])
@@ -70,7 +73,6 @@ const LeadsPage = () => {
 
   const dispararLead = async (lead: Lead) => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
       const response = await fetch(`${apiUrl}/scheduler/trigger-now`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -91,7 +93,6 @@ const LeadsPage = () => {
     if (!confirm(`Disparar para ${novos.length} leads novos?`)) return
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
       const response = await fetch(`${apiUrl}/scheduler/trigger-now`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -138,7 +139,6 @@ const LeadsPage = () => {
     setGmapsScraping(true)
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
       const response = await fetch(`${apiUrl}/outscraper/scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

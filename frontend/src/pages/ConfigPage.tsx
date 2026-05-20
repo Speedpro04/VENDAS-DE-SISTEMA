@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Settings, MessageSquare, Clock, Save, CheckCircle2, Mail, Zap } from 'lucide-react'
+import { getApiBaseUrl } from '../lib/api'
+
+const apiUrl = getApiBaseUrl()
 
 const ConfigPage = () => {
   const [saved, setSaved] = useState(false)
@@ -16,7 +19,7 @@ const ConfigPage = () => {
     smtp_user: 'vendas@solaraconnect.online',
     smtp_pass: '',
     smtp_from: 'Equipe SQR Vendas <vendas@solaraconnect.online>',
-    webhook_url: `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/webhook/evolution`,
+    webhook_url: `${apiUrl}/webhook/evolution`,
     intervalo_min: '24',
     max_tentativas: '3',
     produto_padrao: 'solara_connect',

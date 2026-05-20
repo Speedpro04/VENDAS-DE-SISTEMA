@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Bot, Loader2, Send, Sparkles } from 'lucide-react'
+import { getApiBaseUrl } from '../lib/api'
 
 type Publico = 'interno' | 'cliente'
 type Produto = 'all' | 'solara_connect' | 'autoracer' | 'yachts_atlas'
@@ -11,7 +12,7 @@ interface Message {
   sources?: { product: string; source: string }[]
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE = getApiBaseUrl()
 
 const AssistentePage = () => {
   const [pergunta, setPergunta] = useState('')
